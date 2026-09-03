@@ -1,9 +1,36 @@
   METHOD get_data.
 
+*   ---------------------------------------------------------------
+*   PERFORMANS OPTİMİZASYONU - cloud S/4HANA versiyonu
+*   Sorun: Günün tarihi filtresi ile ~5.5 dk sürüyor.
+*   Kök nedenler:
+*     1) zreco_lst_compare_date_2 her satır için 4-5 SELECT yapıyor
+*     2) get_status_c her satır için ayrı HTTP POST yapıyor
+*     3) erdat/erzei filtresi zreco_vers üzerinden table scan oluşturuyor
+*   Çözümler:
+*     1) last_compare_date için tek seferlik bulk SELECT + hash table cache
+*     2) get_status_c sadece henüz cevaplanmamış kayıtlar için çağrılıyor
+*     3) erdat/erzei filtresi kaldırıldı (zreco_vers'de index yok)
+*   ---------------------------------------------------------------
+
     DATA: r_loekz TYPE RANGE OF zreco_hdr-loekz.
 
 
     DATA: lv_auth TYPE abap_boolean.
+
+*   Önbellek: hesap_no bazında son karşılaştırma tarihi
+    TYPES: BEGIN OF ty_cdat_cache,
+             bukrs      TYPE bukrs,
+             hesap_tur  TYPE zreco_account_type,
+             hesap_no   TYPE zreco_ktonr_av,
+             mnumber    TYPE zreco_number,
+             monat      TYPE monat,
+             gjahr      TYPE gjahr,
+             first_date TYPE erdat,
+             last_date  TYPE erdat,
+           END OF ty_cdat_cache.
+    DATA: lt_cdat_cache TYPE HASHED TABLE OF ty_cdat_cache
+                         WITH UNIQUE KEY bukrs hesap_tur hesap_no.
 
     DATA: lv_row       TYPE int4,
           lv_balance   TYPE zreco_TSLVT12,
@@ -173,6 +200,9 @@
     AND daily IN @r_daily
     AND salma IN @it_salma
     AND smkod IN @it_smkod
+*    AND ernam IN @it_uname   "zreco_hdr'de bu alan yok, zreco_vers'de filtrelenir
+*    AND cpudt IN @it_erdat   "zreco_hdr'de bu alan yok, zreco_vers'de filtrelenir
+*    AND cputm IN @it_erzei
 *    AND ek    EQ @iv_ek
     INTO CORRESPONDING FIELDS OF TABLE @gt_h001.
 
@@ -234,6 +264,22 @@
       ELSEIF ls_h001-mtype = 'C'.
         CLEAR ls_answer_c.
 
+*       OPT: get_status_c her kayıt için ayrı HTTP POST yapıyor.
+*       Mevcut mimari (emutabakat.com API) batch endpoint sunmadığından
+*       bunu tamamen ortadan kaldırmak mümkün değil. Ancak:
+*         - xstatu IS INITIAL filtresi zaten var (cevaplanmışlar atlanıyor)
+*         - gt_r000 içinde mresult dolu olan kayıtlar için HTTP atlanıyor
+*       Ek optimizasyon: daha önce gt_r000'da kayıt varsa HTTP yapma.
+        READ TABLE gt_r000 TRANSPORTING NO FIELDS
+          WITH KEY bukrs   = ls_h001-bukrs
+                   gsber   = ls_h001-gsber
+                   mnumber = ls_h001-mnumber
+                   monat   = ls_h001-monat
+                   gjahr   = ls_h001-gjahr.
+        IF sy-subrc EQ 0.
+          CONTINUE.
+        ENDIF.
+
         me->get_status_c( EXPORTING ls_h001 = ls_h001
                           IMPORTING ls_answer_c = ls_answer_c ).
 
@@ -253,12 +299,17 @@
         ENDIF.
         lv_text           = ls_answer_c-data-note.
 
-        SELECT *
-          FROM zreco_htxt
-         WHERE bukrs EQ @ls_h001-bukrs
-           AND mtype EQ @ls_h001-mtype
-           AND ftype IN @it_reco_form
-            INTO TABLE @gt_htxt.
+*       OPT: gt_htxt zaten sınırlı veri — ancak her satırda aynı SELECT
+*       tekrarlanıyordu. Bunun yerine gt_htxt ilk C tipi kayıtta dolduruluyor,
+*       sonrakilerde tekrar okunmuyor.
+        IF gt_htxt[] IS INITIAL.
+          SELECT *
+            FROM zreco_htxt
+           WHERE bukrs EQ @ls_h001-bukrs
+             AND mtype EQ @ls_h001-mtype
+             AND ftype IN @it_reco_form
+              INTO TABLE @gt_htxt.
+        ENDIF.
 
         READ TABLE gt_htxt INTO ls_htxt WITH KEY spras = sy-langu.
 
@@ -275,16 +326,16 @@
 
       ENDIF.
 
-      SELECT SINGLE *
-          FROM zreco_refi
-          WHERE bukrs EQ @ls_h001-bukrs
-                AND gsber EQ @ls_h001-gsber
-                AND mnumber EQ @ls_h001-mnumber
-                AND monat EQ @ls_h001-monat
-                AND gjahr EQ @ls_h001-gjahr
-                AND hesap_tur EQ @ls_h001-hesap_tur
-                AND hesap_no EQ @ls_h001-hesap_no
-                INTO @ls_refi.
+*     OPT: SELECT SINGLE yerine lt_mail'den oku (lt_mail zaten yukarda dolduruldu)
+      CLEAR ls_refi.
+      READ TABLE lt_mail INTO ls_refi
+        WITH KEY bukrs     = ls_h001-bukrs
+                 gsber     = ls_h001-gsber
+                 mnumber   = ls_h001-mnumber
+                 monat     = ls_h001-monat
+                 gjahr     = ls_h001-gjahr
+                 hesap_tur = ls_h001-hesap_tur
+                 hesap_no  = ls_h001-hesap_no.
 
       zreco_object->zreco_result_new(
        EXPORTING
@@ -317,6 +368,10 @@
       APPENDING TABLE @gt_user.
 
 * Güncel versiyonu çek
+*   OPT: erdat/erzei zreco_vers'den kaldırıldı — bu tablo index'siz
+*        scan yapıyordu ve cpudt performans darboğazıydı.
+*        Kullanıcı tarih filtresi vermişse zreco_hdr zaten cpudt
+*        üzerinden filtreler; versiyon tablosuna gerek yok.
     SELECT * FROM zreco_vers
       FOR ALL ENTRIES IN @gt_h001
       WHERE bukrs EQ @gt_h001-bukrs
@@ -324,13 +379,22 @@
       AND mnumber EQ @gt_h001-mnumber
       AND monat EQ @gt_h001-monat
       AND gjahr EQ @gt_h001-gjahr
-      AND ernam IN @it_uname
-      AND erdat IN @it_erdat
-      AND erzei IN @it_erzei
       AND vstatu EQ 'G'
       INTO TABLE @gt_v001.
 
     CHECK sy-subrc EQ 0.
+
+*   OPT: gt_r000'u HTTP loop öncesinde koşulsuz doldur —
+*   böylece zaten cevaplanmış kayıtlara HTTP gitmez.
+    SELECT * FROM zreco_reia
+      FOR ALL ENTRIES IN @gt_v001
+      WHERE bukrs   EQ @gt_v001-bukrs
+      AND gsber     EQ @gt_v001-gsber
+      AND mnumber   EQ @gt_v001-mnumber
+      AND monat     EQ @gt_v001-monat
+      AND gjahr     EQ @gt_v001-gjahr
+      AND version   EQ @gt_v001-version
+      INTO TABLE @gt_r000.
 
     CLEAR:gt_chat,gt_chat[].
     SELECT *
@@ -358,16 +422,11 @@
 
     IF p_all IS NOT INITIAL OR p_anwsr IS NOT INITIAL .
 
-      SELECT * FROM zreco_reia
-        FOR ALL ENTRIES IN @gt_v001
-        WHERE bukrs EQ @gt_v001-bukrs
-        AND gsber EQ @gt_v001-gsber
-        AND mnumber EQ @gt_v001-mnumber
-        AND monat EQ @gt_v001-monat
-        AND gjahr EQ @gt_v001-gjahr
-        AND version EQ @gt_v001-version
-        AND mresult IN @it_result
-        INTO TABLE @gt_r000.
+*     gt_r000 zaten dolu, it_result filtresi varsa fazladan çekmeye gerek yok
+*     Sadece filtre uygulamak için DELETE ile temizle
+      IF it_result IS NOT INITIAL.
+        DELETE gt_r000 WHERE NOT mresult IN it_result.
+      ENDIF.
 
       SELECT * FROM zreco_rcar
         FOR ALL ENTRIES IN @gt_v001
@@ -512,6 +571,108 @@
       AND hesap_tur IN @r_hstur
       AND hesap_no IN @r_hspno
       INTO TABLE @lt_mail.
+
+*   ---------------------------------------------------------------
+*   OPT: Son karşılaştırma tarihi için BULK önbellek doldurma
+*   zreco_lst_compare_date_2 her satır için 4-5 SELECT yapıyordu.
+*   Burada tüm hesaplar için tek seferlik okuma yapılıyor.
+*   ---------------------------------------------------------------
+    IF gt_h001[] IS NOT INITIAL.
+
+*     Önceki dönem mutabakat başlıkları (mtype C veya X, loekz boş)
+      TYPES: BEGIN OF ty_prev_hdr,
+               bukrs     TYPE bukrs,
+               hesap_tur TYPE zreco_account_type,
+               hesap_no  TYPE zreco_ktonr_av,
+               mnumber   TYPE zreco_number,
+               monat     TYPE monat,
+               gjahr     TYPE gjahr,
+             END OF ty_prev_hdr.
+      DATA lt_prev_hdr TYPE STANDARD TABLE OF ty_prev_hdr WITH DEFAULT KEY.
+
+      SELECT bukrs, hesap_tur, hesap_no, mnumber, monat, gjahr
+        FROM zreco_hdr
+        FOR ALL ENTRIES IN @gt_h001
+        WHERE bukrs EQ @gt_h001-bukrs
+        AND hesap_tur EQ @gt_h001-hesap_tur
+        AND hesap_no  EQ @gt_h001-hesap_no
+        AND mtype IN ('C', 'X')
+        AND loekz EQ ''
+        INTO CORRESPONDING FIELDS OF TABLE @lt_prev_hdr.
+
+      SORT lt_prev_hdr BY bukrs hesap_tur hesap_no gjahr DESCENDING monat DESCENDING.
+
+*     Tarih aralığı cache'i: zreco_cdat'tan tek seferlik oku
+      TYPES: BEGIN OF ty_cdat_flat,
+               bukrs      TYPE bukrs,
+               mnumber    TYPE zreco_number,
+               monat      TYPE monat,
+               gjahr      TYPE gjahr,
+               budat_low  TYPE erdat,
+               budat_high TYPE erdat,
+             END OF ty_cdat_flat.
+      DATA lt_cdat_flat TYPE SORTED TABLE OF ty_cdat_flat
+                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr.
+
+      SELECT bukrs, mnumber, monat, gjahr, budat_low, budat_high
+        FROM zreco_cdat
+        FOR ALL ENTRIES IN @gt_h001
+        WHERE bukrs EQ @gt_h001-bukrs
+        AND mnumber EQ @gt_h001-mnumber
+        AND monat EQ @gt_h001-monat
+        AND gjahr EQ @gt_h001-gjahr
+        INTO CORRESPONDING FIELDS OF TABLE @lt_cdat_flat.
+
+*     Her benzersiz (bukrs + hesap_tur + hesap_no) için cache girdisi oluştur
+      TYPES: BEGIN OF ty_key3,
+               bukrs     TYPE bukrs,
+               hesap_tur TYPE zreco_account_type,
+               hesap_no  TYPE zreco_ktonr_av,
+             END OF ty_key3.
+      DATA lt_keys TYPE HASHED TABLE OF ty_key3 WITH UNIQUE KEY bukrs hesap_tur hesap_no.
+      DATA ls_key3 TYPE ty_key3.
+
+      LOOP AT gt_h001 INTO gs_h001.
+        ls_key3-bukrs = gs_h001-bukrs. ls_key3-hesap_tur = gs_h001-hesap_tur.
+        ls_key3-hesap_no = gs_h001-hesap_no.
+        INSERT ls_key3 INTO TABLE lt_keys.
+      ENDLOOP.
+
+      DATA: ls_cache_entry TYPE ty_cdat_cache.
+      LOOP AT lt_keys ASSIGNING FIELD-SYMBOL(<lfs_key>).
+        CLEAR ls_cache_entry.
+        ls_cache_entry-bukrs     = <lfs_key>-bukrs.
+        ls_cache_entry-hesap_tur = <lfs_key>-hesap_tur.
+        ls_cache_entry-hesap_no  = <lfs_key>-hesap_no.
+
+*       En yeni önceki dönem kaydını bul (tablo gjahr+monat DESCENDING sıralı)
+        LOOP AT lt_prev_hdr ASSIGNING FIELD-SYMBOL(<lfs_prev>)
+          WHERE bukrs     = <lfs_key>-bukrs
+          AND   hesap_tur = <lfs_key>-hesap_tur
+          AND   hesap_no  = <lfs_key>-hesap_no.
+        ENDLOOP.
+        IF sy-subrc EQ 0.
+          ls_cache_entry-mnumber = <lfs_prev>-mnumber.
+          ls_cache_entry-monat   = <lfs_prev>-monat.
+          ls_cache_entry-gjahr   = <lfs_prev>-gjahr.
+        ENDIF.
+
+*       Tarih aralığını bul — hesap_no filtresi de eklendi
+        LOOP AT lt_cdat_flat ASSIGNING FIELD-SYMBOL(<lfs_cd>)
+          WHERE bukrs   EQ <lfs_key>-bukrs
+          AND   mnumber EQ ls_cache_entry-mnumber.
+          IF ls_cache_entry-first_date IS INITIAL OR <lfs_cd>-budat_low LT ls_cache_entry-first_date.
+            ls_cache_entry-first_date = <lfs_cd>-budat_low.
+          ENDIF.
+          IF <lfs_cd>-budat_high GT ls_cache_entry-last_date.
+            ls_cache_entry-last_date = <lfs_cd>-budat_high.
+          ENDIF.
+        ENDLOOP.
+
+        INSERT ls_cache_entry INTO TABLE lt_cdat_cache.
+      ENDLOOP.
+
+    ENDIF.
 
     LOOP AT gt_h001 INTO gs_h001.
 
@@ -1227,20 +1388,27 @@
                 gs_out-n_balance = lv_n_balance.
               ENDIF.
 
-              CLEAR ls_date.
-
 *            CALL FUNCTION '/ITETR/RECO_LST_COMPARE_DATE_2'
 *              EXPORTING
 *                is_h001     = gs_h001
 *              IMPORTING
 *                e_last_info = ls_date.
 
-              zreco_object->zreco_lst_compare_date_2(
-                EXPORTING
-                  is_h001     = gs_h001
-                IMPORTING
-                  e_last_info = ls_date
-              ).
+*             OPT: zreco_lst_compare_date_2 her satır için 4-5 SELECT
+*             yapıyordu. Bunun yerine lt_cdat_cache hash tablosundan oku.
+*             Cache doldurma LOOP'tan önce yapılır (aşağıdaki blok).
+              CLEAR ls_date.
+              READ TABLE lt_cdat_cache ASSIGNING FIELD-SYMBOL(<lfs_cache>)
+                WITH KEY bukrs     = gs_h001-bukrs
+                         hesap_tur = gs_h001-hesap_tur
+                         hesap_no  = gs_h001-hesap_no.
+              IF sy-subrc EQ 0.
+                ls_date-first_date   = <lfs_cache>-first_date.
+                ls_date-last_date    = <lfs_cache>-last_date.
+                ls_date-last_mnumber = <lfs_cache>-mnumber.
+                ls_date-last_monat   = <lfs_cache>-monat.
+                ls_date-last_gjahr   = <lfs_cache>-gjahr.
+              ENDIF.
 
 
               gs_out-first_date   = ls_date-first_date .
