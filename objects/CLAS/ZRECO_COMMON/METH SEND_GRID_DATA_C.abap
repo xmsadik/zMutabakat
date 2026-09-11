@@ -171,10 +171,27 @@
 *      AND hesap_tur EQ @i_head_c-hesap_tur
       INTO @lv_rtm_mail.
 
-
     IF sy-subrc EQ 0.
       lv_mailreturn = lv_rtm_mail.
       APPEND lv_mailreturn TO ls_input_grid-mailreturn.
+    ENDIF.
+
+    IF sy-batch IS INITIAL.
+      SELECT SINGLE AddressID, AddressPersonID
+        FROM I_User
+        WHERE UserID EQ @sy-uname
+        INTO @DATA(ls_sender_user).
+      IF sy-subrc EQ 0.
+        SELECT SINGLE EmailAddress
+          FROM I_AddrCurDefaultEmailAddress WITH PRIVILEGED ACCESS
+          WHERE AddressID       EQ @ls_sender_user-AddressID
+            AND AddressPersonID EQ @ls_sender_user-AddressPersonID
+          INTO @DATA(lv_sender_mail).
+        IF sy-subrc EQ 0 AND lv_sender_mail IS NOT INITIAL.
+          lv_mailreturn = lv_sender_mail.
+          APPEND lv_mailreturn TO ls_input_grid-mailreturn.
+        ENDIF.
+      ENDIF.
     ENDIF.
 
     SELECT SINGLE mail
