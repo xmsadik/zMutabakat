@@ -450,7 +450,7 @@
         IF sy-subrc EQ 0.
           ls_bsik-waers = gs_curr-waers_to.
 *          IF gs_curr-waers_to EQ t001-waers."YiğitcanÖzdemir
-*            ls_bsik-wrbtr = ls_bsik-dmbtr.
+          ls_bsik-wrbtr = ls_bsik-dmbtr. "Madde 1 - Satıcı/müşteri PB-bakiye tutarsızlığı fix - D_BOZKAYNAK
 *          ENDIF.
         ENDIF.
 

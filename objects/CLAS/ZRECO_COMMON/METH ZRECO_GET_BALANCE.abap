@@ -42,26 +42,34 @@
       lv_exch = 'X'.
     ENDIF.
 
-*    SUBMIT zreco_form     WITH p_runty EQ 1
-*                                WITH s_bukrs IN r_bukrs
-*                                WITH p_period EQ i_monat
-*                                WITH p_gjahr EQ i_gjahr
-*                                WITH p_seld EQ lv_seld
-*                                WITH s_kunnr IN r_kunnr
-*                                WITH p_selk EQ lv_selk
-*                                WITH s_lifnr IN r_lifnr
-*                                WITH p_exch EQ lv_exch
-*                                WITH p_tran EQ i_tran
-*                                WITH p_all EQ i_all
-*                                WITH r_bform EQ ''
-*                                WITH r_mform EQ 'X'
-*                                WITH r_all EQ ''
-*                                WITH p_ftype EQ i_ftype
-*                                WITH p_submit EQ 'X'
-*                                WITH p_dtest EQ 'LP01'
-*                                AND RETURN.
-
-*    IMPORT gt_out_c FROM MEMORY ID 'GT_OUT_C'.
+* Madde 4 - Hesap türü/tanımı ALV-PDF'de boş geliyordu, canlı veri üretmiyordu fix - D_BOZKAYNAK
+* NOT: SUBMIT ... AND RETURN + IMPORT FROM MEMORY deseni ABAP Cloud/RAP
+* mimarisinde desteklenmez. zcl_reco_form=>if_rap_query_provider~select
+* zaten aynı verinin materyalize edilmiş halini ZRECO_GTOUT tablosuna
+* yazıyor; bu metot da aynı kaynaktan okumalı.
+    IF lv_seld EQ 'X'.
+      SELECT * FROM zreco_gtout
+        WHERE bukrs     EQ @i_bukrs
+          AND period    EQ @i_monat
+          AND gjahr     EQ @i_gjahr
+          AND hesap_tur EQ 'M'
+          AND hesap_no  EQ @i_kunnr
+        INTO CORRESPONDING FIELDS OF TABLE @gt_out_c.
+    ELSEIF lv_selk EQ 'X'.
+      SELECT * FROM zreco_gtout
+        WHERE bukrs     EQ @i_bukrs
+          AND period    EQ @i_monat
+          AND gjahr     EQ @i_gjahr
+          AND hesap_tur EQ 'S'
+          AND hesap_no  EQ @i_lifnr
+        INTO CORRESPONDING FIELDS OF TABLE @gt_out_c.
+    ELSE.
+      SELECT * FROM zreco_gtout
+        WHERE bukrs  EQ @i_bukrs
+          AND period EQ @i_monat
+          AND gjahr  EQ @i_gjahr
+        INTO CORRESPONDING FIELDS OF TABLE @gt_out_c.
+    ENDIF.
 
     LOOP AT gt_out_c INTO gs_out_c.
 

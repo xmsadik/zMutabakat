@@ -179,7 +179,8 @@
               ls_prev_key TYPE  zreco_cform,
               lv_posnr    TYPE int4.
 
-        SORT gt_out_c BY hesap_tur hesap_no kunnr lifnr.
+* Madde 3 - Takip Raporunda mükerrer mutabakat kaydı fix - D_BOZKAYNAK
+        SORT gt_out_c BY hesap_tur hesap_no kunnr lifnr umskz waers.
 
         LOOP AT gt_out_c ASSIGNING FIELD-SYMBOL(<fs_data>).
 
@@ -188,7 +189,8 @@
              OR <fs_data>-hesap_no  <> ls_prev_key-hesap_no
              OR <fs_data>-kunnr     <> ls_prev_key-kunnr
              OR <fs_data>-lifnr     <> ls_prev_key-lifnr
-             OR <fs_data>-umskz     <> ls_prev_key-umskz.
+             OR <fs_data>-umskz     <> ls_prev_key-umskz
+             OR <fs_data>-waers     <> ls_prev_key-waers.
             TRY.
                 lv_uuid = cl_system_uuid=>create_uuid_c22_static( ).
 

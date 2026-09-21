@@ -50,7 +50,7 @@
 
       SELECT SINGLE * FROM i_companycode
       WHERE CompanyCode EQ @ls_head-bukrs
-      INTO @DATA(ls_componycode).
+      INTO @ls_t001. "Madde 2 - ls_t001 dolmuyordu (Müşteri N cevabında bakiye tekrarı) fix - D_BOZKAYNAK
 
 
       SELECT SINGLE * FROM zreco_vers

@@ -165,6 +165,7 @@ CLASS zreco_common DEFINITION
                                       VALUE(it_belnr) TYPE ty_belnr,
 
       tax_info IMPORTING VALUE(i_bukrs)      TYPE bukrs
+                         VALUE(i_gsber)      TYPE gsber OPTIONAL "Madde 5 - gsber filtresi eksikti fix - D_BOZKAYNAK
                          VALUE(i_lifnr)      TYPE lifnr OPTIONAL
                          VALUE(i_kunnr)      TYPE kunnr OPTIONAL
                          VALUE(i_number)     TYPE abap_boolean
