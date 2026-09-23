@@ -16,7 +16,6 @@
     SELECT SINGLE bukrs,tax_office,tax_number,tax_person
         FROM zreco_adrs
        WHERE bukrs EQ @i_bukrs
-        AND gsber EQ @i_gsber
         INTO @ls_adrs.
 
 
