@@ -102,7 +102,7 @@
                                                    gjahr = p_gjahr
                                                    monat = p_period
                                                    mtype = gv_mtype
-                                                vkn_tckn = iv_vkn_tckn
+                                                   vkn_tckn = iv_vkn_tckn
                                                    ftype = p_ftype.
           IF sy-subrc EQ 0.
 

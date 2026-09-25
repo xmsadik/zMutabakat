@@ -10,7 +10,7 @@ CLASS zcl_reco_form DEFINITION
 
     DATA : p_runty  TYPE c LENGTH 1 VALUE '1', "Önyüz de çalışacak sadece "YiğitcanÖzdemir
            r_mform  TYPE c LENGTH 1 VALUE 'X', "Cari Mutabakat Formu için çalışacak sadece Ba / Bs formu (r_bform) yok "YiğitcanÖzdemir
-           p_ftype  TYPE c LENGTH 2 VALUE '01', "Cari Mutabakat Formu için çalışacak  "YiğitcanÖzdemir
+           p_ftype  TYPE c LENGTH 1 VALUE '1', "Cari Mutabakat Formu için çalışacak  "YiğitcanÖzdemir
            p_period TYPE monat,
            p_gjahr  TYPE gjahr,
            p_daily  TYPE abap_boolean,
@@ -146,7 +146,8 @@ CLASS zcl_reco_form DEFINITION
           gv_odk       TYPE abap_boolean,  "ÖDK mutabakatı da var
           gv_kur       TYPE abap_boolean,  "Kur var
           gv_loc_dmbtr TYPE p LENGTH 16 DECIMALS 2, "Toplam UPB tutarı @YiğitcanÖzdemir
-          gv_spl_dmbtr TYPE p LENGTH 16 DECIMALS 2. "tslxx12. "Toplam ÖDK tutarı @YiğitcanÖzdemir
+          gv_spl_dmbtr TYPE p LENGTH 16 DECIMALS 2, "tslxx12. "Toplam ÖDK tutarı @YiğitcanÖzdemir
+          gv_local_waers TYPE waers. "Şirket kodu yerel para birimi - Madde 1 fix - D_BOZKAYNAK
 
 
     DATA: r_sperr TYPE RANGE OF zreco_adrs-sperr, "Blokaj

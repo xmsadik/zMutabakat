@@ -188,6 +188,12 @@
 *      LEAVE LIST-PROCESSING.
     ENDIF.
 
+* ŞIRKET KODU YEREL PARA BIRIMI - Madde 1 fix - D_BOZKAYNAK
+    SELECT SINGLE currency
+      FROM i_companycode
+     WHERE companycode EQ @gs_adrs-bukrs
+      INTO @gv_local_waers.
+
     SELECT *
       FROM zreco_tole
      WHERE bukrs EQ @gs_adrs-bukrs

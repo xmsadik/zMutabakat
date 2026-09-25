@@ -74,9 +74,6 @@
 
       COMMIT WORK AND WAIT.
 
-
-
-
       LOOP AT gt_bsid INTO ls_bsid WHERE kunnr EQ ls_kna1_tax-kunnr.
 
         CLEAR: gs_cform_temp, gs_bsid_temp, gs_cform_bkpf, gs_curr." gs_tcure. "YiğitcanÖzdemir
@@ -359,6 +356,43 @@
         APPEND gs_bsid_temp TO gt_bsid_temp.
 
       ENDLOOP.
+
+* Madde 4 fix - Hareketsiz/sifir bakiyeli musteriler icin PDF tablosu bombos kalmasin - D_BOZKAYNAK
+      IF sy-subrc NE 0 AND p_zero IS INITIAL.
+
+        CLEAR: gs_cform_temp, gs_account_info.
+
+        MOVE-CORRESPONDING ls_kna1_tax TO gs_cform_temp.
+
+        READ TABLE gt_account_info INTO gs_account_info
+        WITH KEY kunnr = ls_kna1_tax-kunnr.
+
+* EĞER YARATMA TARIHI DÖNEM IÇINDE DEĞILSE
+        IF gs_account_info-erdat GT gv_last_date.
+          DELETE lt_kna1_tax INDEX sy-tabix.
+          CONTINUE.
+        ENDIF.
+
+        IF sy-subrc EQ 0.
+          MOVE-CORRESPONDING gs_account_info TO gs_cform_temp.
+        ENDIF.
+
+        READ TABLE gt_htxt INTO gs_htxt WITH KEY spras = gv_spras.
+
+        IF sy-subrc EQ 0.
+          gs_cform_temp-ltext = gs_htxt-customer_text.
+          gs_cform_temp-xsort = 0.
+        ENDIF.
+
+        gs_cform_temp-hesap_tur = 'M'.
+        gs_cform_temp-waers = gv_local_waers.
+        gs_cform_temp-no_local_curr = gs_adrs-no_local_curr.
+        gs_cform_temp-xsum  = 'X'.
+
+        APPEND gs_cform_temp TO gt_cform_temp.
+
+      ENDIF.
+
     ENDLOOP.
 
 
@@ -690,6 +724,7 @@
 
         gs_cform_temp-hesap_tur = 'S'.
 *        gs_cform_temp-waers = t001-waers."YiğitcanÖzdemir
+        gs_cform_temp-waers = gv_local_waers. "Madde 1 fix - D_BOZKAYNAK
         gs_cform_temp-no_local_curr = gs_adrs-no_local_curr.
         gs_cform_temp-xsum  = 'X'.
 
@@ -1197,7 +1232,7 @@
         FROM zetr_reco_ddl_bsik
         WHERE companycode IN @s_bukrs  AND
               supplier EQ @gs_balance-lifnr AND
-              specialglcode IN @r_umskz_m.
+              specialglcode IN @r_umskz_s. "Madde 4 fix - satici ODK range yanlis kullaniliyordu - D_BOZKAYNAK
 
         IF sy-subrc NE 0.
 
@@ -1211,7 +1246,7 @@
           AND i_operationalacctgdocitem~accountingdocumentitem = i_oplacctgdocitemclrghist~clearedaccountingdocumentitem
               WHERE i_operationalacctgdocitem~companycode IN @s_bukrs  AND
                     i_operationalacctgdocitem~supplier EQ @gs_balance-lifnr AND
-                        i_operationalacctgdocitem~specialglcode IN @r_umskz_m AND
+                        i_operationalacctgdocitem~specialglcode IN @r_umskz_s AND "Madde 4 fix - D_BOZKAYNAK
                         i_oplacctgdocitemclrghist~financialaccounttype = 'K'.
 
           IF sy-subrc NE 0.

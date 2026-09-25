@@ -460,6 +460,14 @@
 
         MOVE-CORRESPONDING gs_c001 TO gs_cform_sf.
 
+* Madde 3.1.3 fix - PDF onizleme bakiyeli mutabakatlarda Hesap Turu bos geliyordu - D_BOZKAYNAK
+        CASE ls_h001-hesap_tur.
+          WHEN 'M'.
+            gs_cform_sf-ltext = gs_htxt-customer_text.
+          WHEN 'S'.
+            gs_cform_sf-ltext = gs_htxt-vendor_text.
+        ENDCASE.
+
         IF gs_cform_sf-wrbtr GE 0.
           gs_cform_sf-debit_credit = gs_htxt-debit_text.
         ENDIF.

@@ -514,7 +514,7 @@
       SELECT lfa1~customer AS kunnr,
              lfa1~supplier AS lifnr,
              lfa1~supplieraccountgroup AS ktokk,
-             lfb1~reconciliationaccount,
+             lfb1~reconciliationaccount AS akont, "Madde 2 fix - D_BOZKAYNAK,
              lfa1~organizationbpname1 AS name1,
              lfa1~organizationbpname2 AS name2,
              lfa1~country AS land1,

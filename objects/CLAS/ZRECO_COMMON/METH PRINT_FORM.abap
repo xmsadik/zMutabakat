@@ -745,6 +745,22 @@
 
 
       INSERT zreco_rand FROM @ls_random.
+
+* Madde 7 fix - lt_mail hic doldurulmuyordu, zreco_refi bos kaliyordu - D_BOZKAYNAK
+      LOOP AT gt_mail_list INTO gs_mail_list WHERE kunnr = ls_head-kunnr
+                                                AND lifnr = ls_head-lifnr.
+        CLEAR ls_mail.
+        ls_mail-bukrs     = ls_head-bukrs.
+        ls_mail-gsber     = ls_head-gsber.
+        ls_mail-mnumber   = ls_head-mnumber.
+        ls_mail-monat     = ls_head-monat.
+        ls_mail-gjahr     = ls_head-gjahr.
+        ls_mail-hesap_tur = ls_head-hesap_tur.
+        ls_mail-hesap_no  = ls_head-hesap_no.
+        ls_mail-receiver  = gs_mail_list-receiver.
+        APPEND ls_mail TO lt_mail.
+      ENDLOOP.
+
       INSERT zreco_refi FROM TABLE @lt_mail.
 
 
