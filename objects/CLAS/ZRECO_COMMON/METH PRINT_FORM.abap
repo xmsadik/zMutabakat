@@ -626,6 +626,7 @@
         <fs_table1>-borc_alacak  = 'Alacak'.
       ELSEIF  ls_form-dmbtr = 0 .
         <fs_table1>-borc_alacak2 = ''.
+        <fs_table1>-try_bakiye   = ls_form-dmbtr.
       ELSE.
         <fs_table1>-try_bakiye   = ls_form-dmbtr.
         <fs_table1>-borc_alacak  = 'Borç'.
@@ -637,6 +638,7 @@
         <fs_table1>-borc_alacak2 = 'Alacak'.
       ELSEIF  ls_form-dmbtr_c = 0 .
         <fs_table1>-borc_alacak2 = ''.
+        <fs_table1>-cevap_try_bakiye =  ls_form-dmbtr_c.
       ELSE.
         <fs_table1>-cevap_try_bakiye = ls_form-dmbtr_c.
         <fs_table1>-borc_alacak2 = 'Borç'.

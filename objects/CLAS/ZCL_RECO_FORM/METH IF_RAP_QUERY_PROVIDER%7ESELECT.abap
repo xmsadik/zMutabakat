@@ -4,6 +4,20 @@
 
         DATA(lt_filter) = io_request->get_filter( )->get_as_ranges( ).
 
+* Perf fix - D_BOZKAYNAK: filtre değerlerinden bir imza (cache key) üret.
+* Paging (skip/top) ve sort bu imzaya dahil DEĞİL - sadece filtre değişirse
+* imza değişir, aynı filtrelerle gelen sayfalama/sıralama isteklerinde
+* aşağıdaki ağır zincir (sos -> get_general_data -> modify_cform_data)
+* tekrar çalıştırılmaz.
+        DATA(lv_cache_key) = |{ sy-uname }|.
+        LOOP AT lt_filter INTO DATA(ls_filter_key).
+          lv_cache_key = lv_cache_key && |;{ ls_filter_key-name }=|.
+          LOOP AT ls_filter_key-range INTO DATA(ls_range_key).
+            lv_cache_key = lv_cache_key &&
+              |{ ls_range_key-sign }{ ls_range_key-option }{ ls_range_key-low }-{ ls_range_key-high }|.
+          ENDLOOP.
+        ENDLOOP.
+
         DATA(lo_paging) = io_request->get_paging( ).
         DATA(lv_top) = lo_paging->get_page_size( ).
         IF lv_top < 0.
@@ -171,57 +185,67 @@
         p_nolc   = VALUE #( lt_p_nolc_range[ 1 ]-low OPTIONAL ).
         p_tran   = VALUE #( lt_p_tran_range[ 1 ]-low OPTIONAL ).
         p_ek = VALUE #( lt_p_ek_alan[ 1 ]-low OPTIONAL ).
+
+        IF gv_cache_hash  = lv_cache_key
+       AND gv_cache_uname = sy-uname
+       AND gt_cache_output IS NOT INITIAL.
+
+* Perf fix - D_BOZKAYNAK: aynı filtrelerle önceden hesaplanmış sonucu kullan,
+* ağır iş mantığı zincirini ve zreco_gtout DB yazımını tekrar çalıştırma.
+          lt_output = gt_cache_output.
+
+        ELSE.
 *START-OF-SELECTION.
-        sos(  ).
+          sos(  ).
 
 
-        DATA: lv_uuid     TYPE sysuuid_c22,
-              ls_prev_key TYPE  zreco_cform,
-              lv_posnr    TYPE int4.
+          DATA: lv_uuid     TYPE sysuuid_c22,
+                ls_prev_key TYPE  zreco_cform,
+                lv_posnr    TYPE int4.
 
 * Madde 3 - Takip Raporunda mükerrer mutabakat kaydı fix - D_BOZKAYNAK
-        SORT gt_out_c BY hesap_tur hesap_no kunnr lifnr umskz waers.
+          SORT gt_out_c BY hesap_tur hesap_no kunnr lifnr umskz waers.
 
-        LOOP AT gt_out_c ASSIGNING FIELD-SYMBOL(<fs_data>).
+          LOOP AT gt_out_c ASSIGNING FIELD-SYMBOL(<fs_data>).
 
-          " Eğer key değiştiyse yeni UUID oluştur
-          IF <fs_data>-hesap_tur <> ls_prev_key-hesap_tur
-             OR <fs_data>-hesap_no  <> ls_prev_key-hesap_no
-             OR <fs_data>-kunnr     <> ls_prev_key-kunnr
-             OR <fs_data>-lifnr     <> ls_prev_key-lifnr
-             OR <fs_data>-umskz     <> ls_prev_key-umskz
-             OR <fs_data>-waers     <> ls_prev_key-waers.
-            TRY.
-                lv_uuid = cl_system_uuid=>create_uuid_c22_static( ).
+            " Eğer key değiştiyse yeni UUID oluştur
+            IF <fs_data>-hesap_tur <> ls_prev_key-hesap_tur
+               OR <fs_data>-hesap_no  <> ls_prev_key-hesap_no
+               OR <fs_data>-kunnr     <> ls_prev_key-kunnr
+               OR <fs_data>-lifnr     <> ls_prev_key-lifnr
+               OR <fs_data>-umskz     <> ls_prev_key-umskz
+               OR <fs_data>-waers     <> ls_prev_key-waers.
+              TRY.
+                  lv_uuid = cl_system_uuid=>create_uuid_c22_static( ).
 
-              CATCH cx_root INTO DATA(lx_err)..
-            ENDTRY..
-            ls_prev_key = <fs_data>. " key değerini sakla
-          ENDIF.
+                CATCH cx_root INTO DATA(lx_err)..
+              ENDTRY..
+              ls_prev_key = <fs_data>. " key değerini sakla
+            ENDIF.
 
-          <fs_data>-uuid = lv_uuid.
-          lv_posnr = lv_posnr + 1.
-          <fs_data>-posnr = lv_posnr.
-        ENDLOOP.
+            <fs_data>-uuid = lv_uuid.
+            lv_posnr = lv_posnr + 1.
+            <fs_data>-posnr = lv_posnr.
+          ENDLOOP.
 
 
-        DATA : ls_temp TYPE zreco_gtout,
-               lt_temp TYPE TABLE OF zreco_gtout.
+          DATA : ls_temp TYPE zreco_gtout,
+                 lt_temp TYPE TABLE OF zreco_gtout.
 
-        LOOP AT gt_out_c INTO DATA(ls_out_c) .
+          LOOP AT gt_out_c INTO DATA(ls_out_c) .
 
-          MOVE-CORRESPONDING ls_out_c TO ls_output.
-          ls_output-gjahr = p_gjahr.
-          ls_output-period = p_period.
-          ls_output-bukrs = gs_adrs-bukrs.
-          APPEND ls_output TO lt_output.
-          MOVE-CORRESPONDING ls_out_c TO ls_temp.
-          ls_temp-gjahr = p_gjahr.
-          ls_temp-period = p_period.
-          ls_temp-bukrs = gs_adrs-bukrs.
-          ls_temp-nolocal = gv_no_local.
-          APPEND ls_temp TO lt_temp.
-        ENDLOOP.
+            MOVE-CORRESPONDING ls_out_c TO ls_output.
+            ls_output-gjahr = p_gjahr.
+            ls_output-period = p_period.
+            ls_output-bukrs = gs_adrs-bukrs.
+            APPEND ls_output TO lt_output.
+            MOVE-CORRESPONDING ls_out_c TO ls_temp.
+            ls_temp-gjahr = p_gjahr.
+            ls_temp-period = p_period.
+            ls_temp-bukrs = gs_adrs-bukrs.
+            ls_temp-nolocal = gv_no_local.
+            APPEND ls_temp TO lt_temp.
+          ENDLOOP.
 
 *        DATA: lv_uuid     TYPE sysuuid_c22,
 *              ls_prev_key TYPE  zreco_cform.
@@ -247,9 +271,15 @@
 *
 *        ENDLOOP.
 
-        DELETE FROM zreco_gtout.
-        IF lt_temp IS NOT INITIAL.
-          MODIFY zreco_gtout FROM TABLE @lt_temp.
+          DELETE FROM zreco_gtout.
+          IF lt_temp IS NOT INITIAL.
+            MODIFY zreco_gtout FROM TABLE @lt_temp.
+          ENDIF.
+
+          gv_cache_hash   = lv_cache_key.
+          gv_cache_uname  = sy-uname.
+          gt_cache_output = lt_output.
+
         ENDIF.
 
         SELECT
@@ -269,12 +299,12 @@
         ENDLOOP.
 
         SELECT *
-              FROM @lt_output AS output
-              ORDER BY output~akont
-              INTO CORRESPONDING FIELDS OF
-                    TABLE @lt_output_detail
-                   UP TO @lv_top ROWS
-              OFFSET @lv_skip.
+          FROM @lt_output AS output
+          ORDER BY output~hesap_tur, output~hesap_no, output~akont
+          INTO CORRESPONDING FIELDS OF
+                TABLE @lt_output_detail
+               UP TO @lv_top ROWS
+          OFFSET @lv_skip.
 
         SELECT COUNT( * ) FROM @lt_output AS detail
           INTO @DATA(lv_cnt_detail).

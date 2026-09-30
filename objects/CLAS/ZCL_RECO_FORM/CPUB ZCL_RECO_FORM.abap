@@ -86,67 +86,67 @@ CLASS zcl_reco_form DEFINITION
           gt_uname TYPE TABLE OF zreco_unam.
 
 
-    DATA: gt_h001      TYPE SORTED TABLE OF zreco_hdr
+    DATA: gt_h001        TYPE SORTED TABLE OF zreco_hdr
              WITH NON-UNIQUE KEY bukrs mnumber monat gjahr
                              hesap_tur hesap_no
           , "Gönderim başlık verisi
-          gs_h001      TYPE zreco_hdr,
-          gt_h002      TYPE SORTED TABLE OF zreco_hia
+          gs_h001        TYPE zreco_hdr,
+          gt_h002        TYPE SORTED TABLE OF zreco_hia
                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr
                                        hesap_tur hesap_no
           , "Cevap başlık verisi
-          gs_h002      TYPE zreco_hia,
-          gt_w001      TYPE SORTED TABLE OF zreco_rboc
+          gs_h002        TYPE zreco_hia,
+          gt_w001        TYPE SORTED TABLE OF zreco_rboc
                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr
                                        hesap_tur hesap_no
           , "Gönderim PB bazında bilgiler
-          gs_w001      TYPE zreco_rboc,
-          gt_v001      TYPE SORTED TABLE OF zreco_vers
+          gs_w001        TYPE zreco_rboc,
+          gt_v001        TYPE SORTED TABLE OF zreco_vers
                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr,
-          gs_v001      TYPE zreco_vers, "Versiyon
-          gt_b001      TYPE SORTED TABLE OF zreco_recb
+          gs_v001        TYPE zreco_vers, "Versiyon
+          gt_b001        TYPE SORTED TABLE OF zreco_recb
                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr
                                            kunnr lifnr
           ,
-          gs_b001      TYPE zreco_recb,
-          gt_c001      TYPE SORTED TABLE OF zreco_rcai
+          gs_b001        TYPE zreco_recb,
+          gt_c001        TYPE SORTED TABLE OF zreco_rcai
                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr
                                            kunnr lifnr waers
           ,
-          gs_c001      TYPE zreco_rcai,
-          gt_e001      TYPE SORTED TABLE OF zreco_refi
+          gs_c001        TYPE zreco_rcai,
+          gt_e001        TYPE SORTED TABLE OF zreco_refi
                        WITH NON-UNIQUE KEY bukrs mnumber monat gjahr
                                            hesap_tur hesap_no
           ,
-          gs_e001      TYPE zreco_refi,
-          gt_e002      TYPE SORTED TABLE OF zreco_urei
+          gs_e001        TYPE zreco_refi,
+          gt_e002        TYPE SORTED TABLE OF zreco_urei
                        WITH NON-UNIQUE KEY receiver
           ,
-          gt_e003      TYPE SORTED TABLE OF zreco_eate
+          gt_e003        TYPE SORTED TABLE OF zreco_eate
                        WITH NON-UNIQUE KEY smtp_addr
           ,
-          gs_e002      TYPE zreco_urei,
-          gs_d002      TYPE zreco_dsdr, "Şüpheli alacaklar
-          gt_r000      TYPE SORTED TABLE OF zreco_reia
+          gs_e002        TYPE zreco_urei,
+          gs_d002        TYPE zreco_dsdr, "Şüpheli alacaklar
+          gt_r000        TYPE SORTED TABLE OF zreco_reia
                        WITH NON-UNIQUE KEY mnumber monat gjahr version,
-          gs_r000      TYPE zreco_reia,
-          gt_r001      TYPE SORTED TABLE OF zreco_rcar
+          gs_r000        TYPE zreco_reia,
+          gt_r001        TYPE SORTED TABLE OF zreco_rcar
                        WITH NON-UNIQUE KEY mnumber monat gjahr version,
-          gs_r001      TYPE zreco_rcar,
+          gs_r001        TYPE zreco_rcar,
 *      gt_r002      TYPE SORTED TABLE OF zreco_rbia
 *                   WITH NON-UNIQUE KEY mnumber monat gjahr version,
-          gt_user      TYPE SORTED TABLE OF zreco_cvua
+          gt_user        TYPE SORTED TABLE OF zreco_cvua
                        WITH NON-UNIQUE KEY kunnr lifnr,
-          gs_user      TYPE zreco_cvua,
+          gs_user        TYPE zreco_cvua,
 *      gs_r002      TYPE /itetr/reco_rbia,
-          gv_bukrs     TYPE bukrs, "Şirket kodu
-          gv_spras     TYPE spras, "İletişim dili
-          gv_langu     TYPE spras VALUE 'TR', "Ekran iletişim dili
-          gv_auth      TYPE abap_boolean,  "Yetki kontrolü
-          gv_odk       TYPE abap_boolean,  "ÖDK mutabakatı da var
-          gv_kur       TYPE abap_boolean,  "Kur var
-          gv_loc_dmbtr TYPE p LENGTH 16 DECIMALS 2, "Toplam UPB tutarı @YiğitcanÖzdemir
-          gv_spl_dmbtr TYPE p LENGTH 16 DECIMALS 2, "tslxx12. "Toplam ÖDK tutarı @YiğitcanÖzdemir
+          gv_bukrs       TYPE bukrs, "Şirket kodu
+          gv_spras       TYPE spras, "İletişim dili
+          gv_langu       TYPE spras VALUE 'TR', "Ekran iletişim dili
+          gv_auth        TYPE abap_boolean,  "Yetki kontrolü
+          gv_odk         TYPE abap_boolean,  "ÖDK mutabakatı da var
+          gv_kur         TYPE abap_boolean,  "Kur var
+          gv_loc_dmbtr   TYPE p LENGTH 16 DECIMALS 2, "Toplam UPB tutarı @YiğitcanÖzdemir
+          gv_spl_dmbtr   TYPE p LENGTH 16 DECIMALS 2, "tslxx12. "Toplam ÖDK tutarı @YiğitcanÖzdemir
           gv_local_waers TYPE waers. "Şirket kodu yerel para birimi - Madde 1 fix - D_BOZKAYNAK
 
 

@@ -1107,7 +1107,7 @@
                   gs_out-uname3 = <lfs_user>-uname3.
                 ENDIF.
             ENDCASE.
-
+*
             APPEND gs_out TO gt_out.
 
             CLEAR: gs_out, gt_out.

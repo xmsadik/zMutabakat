@@ -552,6 +552,13 @@
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GT_CACHE_OUTPUT",
+    "CMPTYPE":0,
+    "MTDTYPE":0,
+    "MTDTYPE2":0
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
     "CMPNAME":"GT_CDUN",
     "CMPTYPE":0,
     "MTDTYPE":0,
@@ -938,6 +945,20 @@
    {
     "CLSNAME":"ZCL_RECO_FORM",
     "CMPNAME":"GV_B_XBLNR",
+    "CMPTYPE":0,
+    "MTDTYPE":0,
+    "MTDTYPE2":0
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GV_CACHE_HASH",
+    "CMPTYPE":0,
+    "MTDTYPE":0,
+    "MTDTYPE2":0
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GV_CACHE_UNAME",
     "CMPTYPE":0,
     "MTDTYPE":0,
     "MTDTYPE2":0
@@ -5230,8 +5251,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":172,
-    "TYPESRC":"gt_b001      TYPE SORTED TABLE OF zreco_recb\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                           kunnr lifnr\r\n"
+    "TYPESRC_LENG":174,
+    "TYPESRC":"gt_b001        TYPE SORTED TABLE OF zreco_recb\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                           kunnr lifnr\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -5584,8 +5605,67 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":178,
-    "TYPESRC":"gt_c001      TYPE SORTED TABLE OF zreco_rcai\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                           kunnr lifnr waers\r\n"
+    "TYPESRC_LENG":180,
+    "TYPESRC":"gt_c001        TYPE SORTED TABLE OF zreco_rcai\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                           kunnr lifnr waers\r\n"
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GT_CACHE_OUTPUT",
+    "VERSION":1,
+    "ALIAS":"",
+    "REDEFIN":"",
+    "EXPOSURE":0,
+    "STATE":1,
+    "EDITORDER":3,
+    "LOCKED":"",
+    "DISPID":0,
+    "R3RELEASE":"920",
+    "AUTHOR":"",
+    "CREATEDON":"2026-09-30",
+    "CHANGEDBY":"",
+    "CHANGEDON":"0000-00-00",
+    "MTDDECLTYP":0,
+    "MTDABSTRCT":"",
+    "MTDFINAL":"",
+    "DSRNOTEOM":"",
+    "EDTX":"",
+    "MTDNEWEXC":"",
+    "MTDREPLACE":"",
+    "MTDOPTNL":"",
+    "MTDSQLSERVICE":"",
+    "MTDAMDPRDONLY":"",
+    "MTDAMDPCDSCLNT":"",
+    "MTDAMDPCLNTINDEP":"",
+    "ATTDECLTYP":1,
+    "ATTDYNAMIC":"",
+    "ATTGETMTD":"",
+    "ATTSETMTD":"",
+    "ATTRDONLY":"",
+    "ATTVALUE":"",
+    "ATTPERSIST":"",
+    "ATTBUSOBJ":"",
+    "ATTKEYFLD":"",
+    "ATTEXPVIRT":0,
+    "EVTDECLTYP":0,
+    "TYPDUMMY":"",
+    "TYPTYPE":4,
+    "TYPE":"",
+    "TABLEOF":"",
+    "SRCROW1":9,
+    "SRCCOLUMN1":16,
+    "SRCROW2":9,
+    "SRCCOLUMN2":66,
+    "REFCLSNAME":"",
+    "REFINTNAME":"",
+    "REFCMPNAME":"",
+    "BCMTDINST":"",
+    "BCMTDCAT":0,
+    "BCMTDDIA":"",
+    "BCMTDCOM":"",
+    "BCMTDSYN":0,
+    "BCEVTCAT":0,
+    "TYPESRC_LENG":53,
+    "TYPESRC":"gt_cache_output TYPE TABLE OF zreco_ddl_i_reco_form\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -6174,8 +6254,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":179,
-    "TYPESRC":"gt_e001      TYPE SORTED TABLE OF zreco_refi\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                           hesap_tur hesap_no\r\n"
+    "TYPESRC_LENG":181,
+    "TYPESRC":"gt_e001        TYPE SORTED TABLE OF zreco_refi\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                           hesap_tur hesap_no\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -6233,8 +6313,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":99,
-    "TYPESRC":"gt_e002      TYPE SORTED TABLE OF zreco_urei\r\n                       WITH NON-UNIQUE KEY receiver\r\n"
+    "TYPESRC_LENG":101,
+    "TYPESRC":"gt_e002        TYPE SORTED TABLE OF zreco_urei\r\n                       WITH NON-UNIQUE KEY receiver\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -6292,8 +6372,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":100,
-    "TYPESRC":"gt_e003      TYPE SORTED TABLE OF zreco_eate\r\n                       WITH NON-UNIQUE KEY smtp_addr\r\n"
+    "TYPESRC_LENG":102,
+    "TYPESRC":"gt_e003        TYPE SORTED TABLE OF zreco_eate\r\n                       WITH NON-UNIQUE KEY smtp_addr\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -6646,8 +6726,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":154,
-    "TYPESRC":"gt_h001      TYPE SORTED TABLE OF zreco_hdr\r\n             WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                             hesap_tur hesap_no\r\n"
+    "TYPESRC_LENG":156,
+    "TYPESRC":"gt_h001        TYPE SORTED TABLE OF zreco_hdr\r\n             WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                             hesap_tur hesap_no\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -6705,8 +6785,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":174,
-    "TYPESRC":"gt_h002      TYPE SORTED TABLE OF zreco_hia\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                       hesap_tur hesap_no\r\n"
+    "TYPESRC_LENG":176,
+    "TYPESRC":"gt_h002        TYPE SORTED TABLE OF zreco_hia\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                       hesap_tur hesap_no\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -7590,8 +7670,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":118,
-    "TYPESRC":"gt_r000      TYPE SORTED TABLE OF zreco_reia\r\n                       WITH NON-UNIQUE KEY mnumber monat gjahr version\r\n"
+    "TYPESRC_LENG":120,
+    "TYPESRC":"gt_r000        TYPE SORTED TABLE OF zreco_reia\r\n                       WITH NON-UNIQUE KEY mnumber monat gjahr version\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -7649,8 +7729,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":118,
-    "TYPESRC":"gt_r001      TYPE SORTED TABLE OF zreco_rcar\r\n                       WITH NON-UNIQUE KEY mnumber monat gjahr version\r\n"
+    "TYPESRC_LENG":120,
+    "TYPESRC":"gt_r001        TYPE SORTED TABLE OF zreco_rcar\r\n                       WITH NON-UNIQUE KEY mnumber monat gjahr version\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -8298,8 +8378,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":102,
-    "TYPESRC":"gt_user      TYPE SORTED TABLE OF zreco_cvua\r\n                       WITH NON-UNIQUE KEY kunnr lifnr\r\n"
+    "TYPESRC_LENG":104,
+    "TYPESRC":"gt_user        TYPE SORTED TABLE OF zreco_cvua\r\n                       WITH NON-UNIQUE KEY kunnr lifnr\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -8357,8 +8437,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":116,
-    "TYPESRC":"gt_v001      TYPE SORTED TABLE OF zreco_vers\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n"
+    "TYPESRC_LENG":118,
+    "TYPESRC":"gt_v001        TYPE SORTED TABLE OF zreco_vers\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -8416,8 +8496,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":175,
-    "TYPESRC":"gt_w001      TYPE SORTED TABLE OF zreco_rboc\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                       hesap_tur hesap_no\r\n"
+    "TYPESRC_LENG":177,
+    "TYPESRC":"gt_w001        TYPE SORTED TABLE OF zreco_rboc\r\n                       WITH NON-UNIQUE KEY bukrs mnumber monat gjahr\r\n                                       hesap_tur hesap_no\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -8874,6 +8954,124 @@
     "TYPDUMMY":"",
     "TYPTYPE":1,
     "TYPE":"ABAP_BOOLEAN",
+    "TABLEOF":"",
+    "SRCROW1":0,
+    "SRCCOLUMN1":0,
+    "SRCROW2":0,
+    "SRCCOLUMN2":0,
+    "REFCLSNAME":"",
+    "REFINTNAME":"",
+    "REFCMPNAME":"",
+    "BCMTDINST":"",
+    "BCMTDCAT":0,
+    "BCMTDDIA":"",
+    "BCMTDCOM":"",
+    "BCMTDSYN":0,
+    "BCEVTCAT":0,
+    "TYPESRC_LENG":0,
+    "TYPESRC":""
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GV_CACHE_HASH",
+    "VERSION":1,
+    "ALIAS":"",
+    "REDEFIN":"",
+    "EXPOSURE":0,
+    "STATE":1,
+    "EDITORDER":1,
+    "LOCKED":"",
+    "DISPID":0,
+    "R3RELEASE":"920",
+    "AUTHOR":"",
+    "CREATEDON":"2026-09-30",
+    "CHANGEDBY":"",
+    "CHANGEDON":"0000-00-00",
+    "MTDDECLTYP":0,
+    "MTDABSTRCT":"",
+    "MTDFINAL":"",
+    "DSRNOTEOM":"",
+    "EDTX":"",
+    "MTDNEWEXC":"",
+    "MTDREPLACE":"",
+    "MTDOPTNL":"",
+    "MTDSQLSERVICE":"",
+    "MTDAMDPRDONLY":"",
+    "MTDAMDPCDSCLNT":"",
+    "MTDAMDPCLNTINDEP":"",
+    "ATTDECLTYP":1,
+    "ATTDYNAMIC":"",
+    "ATTGETMTD":"",
+    "ATTSETMTD":"",
+    "ATTRDONLY":"",
+    "ATTVALUE":"",
+    "ATTPERSIST":"",
+    "ATTBUSOBJ":"",
+    "ATTKEYFLD":"",
+    "ATTEXPVIRT":0,
+    "EVTDECLTYP":0,
+    "TYPDUMMY":"",
+    "TYPTYPE":1,
+    "TYPE":"STRING",
+    "TABLEOF":"",
+    "SRCROW1":0,
+    "SRCCOLUMN1":0,
+    "SRCROW2":0,
+    "SRCCOLUMN2":0,
+    "REFCLSNAME":"",
+    "REFINTNAME":"",
+    "REFCMPNAME":"",
+    "BCMTDINST":"",
+    "BCMTDCAT":0,
+    "BCMTDDIA":"",
+    "BCMTDCOM":"",
+    "BCMTDSYN":0,
+    "BCEVTCAT":0,
+    "TYPESRC_LENG":0,
+    "TYPESRC":""
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GV_CACHE_UNAME",
+    "VERSION":1,
+    "ALIAS":"",
+    "REDEFIN":"",
+    "EXPOSURE":0,
+    "STATE":1,
+    "EDITORDER":2,
+    "LOCKED":"",
+    "DISPID":0,
+    "R3RELEASE":"920",
+    "AUTHOR":"",
+    "CREATEDON":"2026-09-30",
+    "CHANGEDBY":"",
+    "CHANGEDON":"0000-00-00",
+    "MTDDECLTYP":0,
+    "MTDABSTRCT":"",
+    "MTDFINAL":"",
+    "DSRNOTEOM":"",
+    "EDTX":"",
+    "MTDNEWEXC":"",
+    "MTDREPLACE":"",
+    "MTDOPTNL":"",
+    "MTDSQLSERVICE":"",
+    "MTDAMDPRDONLY":"",
+    "MTDAMDPCDSCLNT":"",
+    "MTDAMDPCLNTINDEP":"",
+    "ATTDECLTYP":1,
+    "ATTDYNAMIC":"",
+    "ATTGETMTD":"",
+    "ATTSETMTD":"",
+    "ATTRDONLY":"",
+    "ATTVALUE":"",
+    "ATTPERSIST":"",
+    "ATTBUSOBJ":"",
+    "ATTKEYFLD":"",
+    "ATTEXPVIRT":0,
+    "EVTDECLTYP":0,
+    "TYPDUMMY":"",
+    "TYPTYPE":1,
+    "TYPE":"SYUNAME",
     "TABLEOF":"",
     "SRCROW1":0,
     "SRCCOLUMN1":0,
@@ -9409,7 +9607,7 @@
     "SRCROW1":148,
     "SRCCOLUMN1":10,
     "SRCROW2":148,
-    "SRCCOLUMN2":49,
+    "SRCCOLUMN2":51,
     "REFCLSNAME":"",
     "REFINTNAME":"",
     "REFCMPNAME":"",
@@ -9419,8 +9617,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":42,
-    "TYPESRC":"gv_loc_dmbtr TYPE p LENGTH 16 DECIMALS 2\r\n"
+    "TYPESRC_LENG":44,
+    "TYPESRC":"gv_loc_dmbtr   TYPE p LENGTH 16 DECIMALS 2\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -10235,7 +10433,7 @@
     "SRCROW1":149,
     "SRCCOLUMN1":10,
     "SRCROW2":149,
-    "SRCCOLUMN2":49,
+    "SRCCOLUMN2":51,
     "REFCLSNAME":"",
     "REFINTNAME":"",
     "REFCMPNAME":"",
@@ -10245,8 +10443,8 @@
     "BCMTDCOM":"",
     "BCMTDSYN":0,
     "BCEVTCAT":0,
-    "TYPESRC_LENG":42,
-    "TYPESRC":"gv_spl_dmbtr TYPE p LENGTH 16 DECIMALS 2\r\n"
+    "TYPESRC_LENG":44,
+    "TYPESRC":"gv_spl_dmbtr   TYPE p LENGTH 16 DECIMALS 2\r\n"
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
@@ -15083,6 +15281,12 @@
    },
    {
     "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GT_CACHE_OUTPUT",
+    "LANGU":"T",
+    "DESCRIPT":""
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
     "CMPNAME":"GT_CDUN",
     "LANGU":"T",
     "DESCRIPT":""
@@ -15414,6 +15618,18 @@
    {
     "CLSNAME":"ZCL_RECO_FORM",
     "CMPNAME":"GV_B_XBLNR",
+    "LANGU":"T",
+    "DESCRIPT":""
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GV_CACHE_HASH",
+    "LANGU":"T",
+    "DESCRIPT":""
+   },
+   {
+    "CLSNAME":"ZCL_RECO_FORM",
+    "CMPNAME":"GV_CACHE_UNAME",
     "LANGU":"T",
     "DESCRIPT":""
    },
