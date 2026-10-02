@@ -59,15 +59,6 @@
     "AS4LOCAL":"N",
     "VALPOS":1,
     "AS4VERS":0,
-    "DOMVALUE_L":"B",
-    "DOMVALUE_H":"",
-    "APPVAL":""
-   },
-   {
-    "DOMNAME":"ZRECO_FTYPE",
-    "AS4LOCAL":"N",
-    "VALPOS":2,
-    "AS4VERS":0,
     "DOMVALUE_L":"C",
     "DOMVALUE_H":"",
     "APPVAL":""
@@ -83,17 +74,6 @@
     "DDLANGUAGE":"T",
     "AS4LOCAL":"N",
     "VALPOS":1,
-    "AS4VERS":0,
-    "DDTEXT":"B Formu",
-    "DOMVAL_LD":"",
-    "DOMVAL_HD":"",
-    "DOMVALUE_L":"B"
-   },
-   {
-    "DOMNAME":"ZRECO_FTYPE",
-    "DDLANGUAGE":"T",
-    "AS4LOCAL":"N",
-    "VALPOS":2,
     "AS4VERS":0,
     "DDTEXT":"Cari Hesap",
     "DOMVAL_LD":"",

@@ -196,7 +196,7 @@
     AND vkn_tckn IN @it_vkn
     AND kunnr IN @it_kunnr
     AND lifnr IN @it_lifnr
-    AND ftype EQ '01' "@it_reco_form           "YiğitcanÖzdemir
+    AND ftype EQ '01'       "YiğitcanÖzdemir
     AND daily IN @r_daily
     AND salma IN @it_salma
     AND smkod IN @it_smkod

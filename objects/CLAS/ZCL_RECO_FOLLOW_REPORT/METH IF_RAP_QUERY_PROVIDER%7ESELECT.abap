@@ -74,7 +74,7 @@
                     low    = ls_range-low
                     high   = ls_range-high ) TO reco_number.
               ENDLOOP.
-            WHEN 'S_HSTUT'.
+            WHEN 'S_HSTUR'.
               CLEAR: ls_range.
               LOOP AT condition-range INTO ls_range.
                 APPEND VALUE #( sign   = ls_range-sign
@@ -239,9 +239,9 @@
 
 
     LOOP AT mt_out INTO DATA(ls_out_c) .
-      IF skip IS NOT INITIAL.
-        CHECK sy-tabix > skip.
-      ENDIF.
+*      IF skip IS NOT INITIAL.
+*        CHECK sy-tabix > skip.
+*      ENDIF.
 
       MOVE-CORRESPONDING ls_out_c TO ls_output.
       ls_output-s_outpt = ls_out_c-moutput.
