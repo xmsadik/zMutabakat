@@ -253,9 +253,9 @@
 
       APPEND ls_output TO lt_output.
 
-      IF lines( lt_output ) >= top.
-        EXIT.
-      ENDIF.
+*      IF lines( lt_output ) >= top.
+*        EXIT.
+*      ENDIF.
 
     ENDLOOP.
 
